@@ -1,0 +1,34 @@
+# Copy this file and name it "config.yaml"
+
+redmine:
+  url: ${REDMINE_URL}
+  version: ${REDMINE_VERSION}
+  api_key: ${REDMINE_API_KEY}
+  issue_closed_id: 5  # Id of the "closed" status
+
+
+actions:
+
+  waiting_for_feedback:
+    start_date: "2021-01-01"  # Date from which tickets are to be processed (all tickets from yyyy-mm-dd)
+    time_range: "14"  # Number of days that should be exceeded without updates on the ticket
+    projects:
+      - "IT Tickets"  # List of redmine projects
+    status:
+      - "Waiting for feedback"  # List of all issue status you want to treat
+    close_ticket: true  # Should the ticket be closed after the update?
+    template: "close_ticket" # Template for the update massage
+
+  in_revision:
+    start_date: "2021-01-01"
+    time_range: "14"
+    projects:
+      - "IT Tickets"
+    status:
+      - "In revision"
+    close_ticket: false
+    template: "nudge_ticket"
+
+
+logging:
+  level: "ERROR"

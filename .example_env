@@ -1,0 +1,4 @@
+# Copy this file and name it '.env'
+REDMINE_URL="https://redmine.my-awesome-ngo.org"
+REDMINE_VERSION="4.1.1"
+REDMINE_API_KEY="xxxxxxxxxxx"

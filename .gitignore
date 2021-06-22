@@ -1,0 +1,16 @@
+# PyCharm
+.idea/
+
+# Config
+config.yaml
+
+# Environment
+.env
+venv/
+
+# Templates
+templates/*
+!templates/example_template
+
+# Logs
+marvin.log

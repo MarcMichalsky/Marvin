@@ -1,0 +1,7 @@
+Hello {{ author }},
+
+this ticket wasn't updated for at least {{ time_range }}. We therefore assume that the problem has been solved in the meantime. If the issue persists, please reopen the ticket and give us a brief update on the situation.
+Here is the ticket: {{ url }}
+
+Yours sincerely
+Your IT Team
