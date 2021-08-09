@@ -52,9 +52,12 @@ def treat_issues():
                 notes = template.render(author=issue.author.name, time_range=action['time_range'], url=issue.url)
 
                 # Update issue
-                if action['close_ticket']:
+                if action.get('close_ticket') is True:
                     redmine.issue.update(issue.id, notes=notes, status_id=config['redmine']['issue_closed_id'])
                     logging.info(f"Ticket ID: {issue.id}, ticket closed")
+                elif action.get('change_status_to') is not None and isinstance(action.get('change_status_to'), int):
+                    redmine.issue.update(issue.id, notes=notes, status_id=action['change_status_to'])
+                    logging.info(f"Ticket ID: {issue.id}, changed ticket status")
                 else:
                     redmine.issue.update(issue.id, notes=notes)
                     logging.info(f"Ticket ID: {issue.id}")

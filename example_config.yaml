@@ -4,7 +4,7 @@ redmine:
   url: ${REDMINE_URL}
   version: ${REDMINE_VERSION}
   api_key: ${REDMINE_API_KEY}
-  issue_closed_id: "5"  # Id of the "closed" status
+  issue_closed_id: 5  # Id of the "closed" status
 
 
 actions:
@@ -26,7 +26,7 @@ actions:
       - "IT Tickets"
     status:
       - "In revision"
-    close_ticket: false
+    change_status_to: 4
     template: "nudge_ticket"
 
 
