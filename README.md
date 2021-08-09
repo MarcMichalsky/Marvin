@@ -2,9 +2,19 @@
 Marvin is a bot for Redmine. He helps you to tidy up your ticket system by nudging and/or closing abandoned tickets.
 
 ## Configuration
-After pulling the repository you have to fulfill the requirements with:
+After pulling the repository you have to create a virtual environment within the repository folder:
 ```bash
-pip3 install -r requirements
+python3 -m venv ./venv
+```
+
+Activate the virtual environment:
+```bash
+source venv/bin/activate
+```
+
+Then you have to fulfill the dependencies with:
+```bash
+pip3 install -r requirements.txt
 ```
 Next copy the example files, rename them to `.env` and `config.yaml` and fill in the right values.
 
@@ -22,7 +32,7 @@ actions:
       - "IT Tickets"  # List of redmine projects
     status:
       - "Waiting for feedback"  # List of all issue status you want to treat
-    close_ticket: true  # Should the ticket be closed after the update?
+    close_ticket: true  # optional: should the ticket get closed after the update?
     template: "close_ticket" # Template for the update massage
 
   in_revision:
@@ -32,8 +42,8 @@ actions:
       - "IT Tickets"
     status:
       - "In revision"
-    close_ticket: false
     template: "nudge_ticket"
+    change_status_to: 4  # optional: change the ticket status to 4 (e.g. "waiting for feedback") 
 ```
 
 ## Usage
@@ -46,7 +56,6 @@ crontab -e
 
 Add entry
 ```
-30 8 * * * python3 path/to/main.py
+30 8 * * 1-5 /path/to/Marvin/venv/bin/python /path/to/Marvin/main.py
 ```
-This executes the script every day at 8.30 am.
-
+This executes the script every weekday at 8.30 am.
