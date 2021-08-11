@@ -1,24 +1,26 @@
 #!/usr/bin/env python3
 import sys
+import os
 from datetime import date, timedelta
 import logging
 from redminelib import Redmine
 from envyaml import EnvYAML
 from jinja2 import Template
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
 
 def treat_issues():
-
     # Set up logging
     logging.basicConfig(
-        filename='marvin.log',
+        filename=dir_path + 'marvin.log',
         level=logging.ERROR,
         format='%(asctime)s - %(message)s',
     )
 
     # Load configuration
     try:
-        config = EnvYAML("config.yaml")
+        config = EnvYAML(dir_path + 'config.yaml')
         url = config['redmine']['url']
         version = config['redmine']['version']
         api_key = config['redmine']['api_key']
@@ -46,7 +48,7 @@ def treat_issues():
             for issue in redmine.issue \
                     .filter(updated_on=f"><{action['start_date']}|{end_date.isoformat()}") \
                     .filter(project__name__in=action['projects'], status__name__in=action['status'], closed_on=None):
-                with open(f"templates/{action['template']}", newline='\r\n') as f:
+                with open(f"{dir_path}templates/{action['template']}", newline='\r\n') as f:
                     content = f.read()
                 template = Template(content)
                 notes = template.render(author=issue.author.name, time_range=action['time_range'], url=issue.url)
