@@ -7,10 +7,11 @@ from redminelib import Redmine
 from envyaml import EnvYAML
 from jinja2 import Template
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-
 
 def treat_issues():
+    
+    dir_path = os.path.dirname(os.path.realpath(__file__)) + '/'
+
     # Set up logging
     logging.basicConfig(
         filename=dir_path + 'marvin.log',
