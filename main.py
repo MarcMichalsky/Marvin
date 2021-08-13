@@ -21,7 +21,7 @@ def treat_issues():
 
     # Load configuration
     try:
-        config = EnvYAML(dir_path + 'config.yaml')
+        config = EnvYAML(dir_path + 'config.yaml', dir_path + '.env')
         url = config['redmine']['url']
         version = config['redmine']['version']
         api_key = config['redmine']['api_key']
