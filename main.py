@@ -9,7 +9,6 @@ from jinja2 import Template
 
 
 def treat_issues():
-    
     dir_path = os.path.dirname(os.path.realpath(__file__)) + '/'
 
     # Set up logging
@@ -25,6 +24,7 @@ def treat_issues():
         url = config['redmine']['url']
         version = config['redmine']['version']
         api_key = config['redmine']['api_key']
+        no_bot_tag = config['redmine']['no_bot_tag']
         actions = config['actions']
         logging.getLogger().setLevel(config['logging']['level'].upper())
     except Exception as e:
@@ -49,6 +49,16 @@ def treat_issues():
             for issue in redmine.issue \
                     .filter(updated_on=f"><{action['start_date']}|{end_date.isoformat()}") \
                     .filter(project__name__in=action['projects'], status__name__in=action['status'], closed_on=None):
+
+                # Skip issue if a no_bot_tag is found in the issue description or any of its journals
+                def find_no_bot_tag_in_journals(journals):
+                    for journal in journals:
+                        if no_bot_tag in journal.notes:
+                            return True
+                    return False
+                if no_bot_tag in issue.description or find_no_bot_tag_in_journals(issue.journals):
+                    continue
+
                 with open(f"{dir_path}templates/{action['template']}", newline='\r\n') as f:
                     content = f.read()
                 template = Template(content)
