@@ -7,6 +7,7 @@ import logging
 from redminelib import Redmine
 from envyaml import EnvYAML
 from jinja2 import Template
+from exceptions import IssueStatusNotFoundException
 
 
 def treat_issues():
@@ -26,6 +27,7 @@ def treat_issues():
         version = config['redmine']['version']
         api_key = config['redmine']['api_key']
         time_zone = pytz.timezone(config['redmine']['time_zone'])
+        issue_closed_status = config['redmine']['issue_closed_status']
         no_bot_tag = config['redmine']['no_bot_tag']
         actions = config['actions']
         logging.getLogger().setLevel(config['logging']['level'].upper())
@@ -38,6 +40,20 @@ def treat_issues():
         redmine = Redmine(url, version=version, key=api_key)
     except Exception as e:
         logging.error('Could not instantiate Redmine object', exc_info=True)
+        sys.exit(1)
+
+    # Get status id for closed issues
+    try:
+        all_status = redmine.issue_status.all()
+        issue_closed_statuses = all_status.filter(name=issue_closed_status)
+        if len(issue_closed_statuses) < 1:
+            raise IssueStatusNotFoundException(issue_closed_status)
+        elif len(issue_closed_statuses) > 1:
+            logging.warning(f'Expected one issue status with the name {issue_closed_status} but found '
+                            f'{len(issue_closed_statuses)}')
+        issue_closed_status_id = issue_closed_statuses[0].id
+    except IssueStatusNotFoundException as e:
+        logging.error(e, exc_info=True)
         sys.exit(1)
 
     # Loop through all actions defined in config.yaml
@@ -72,7 +88,7 @@ def treat_issues():
 
                 # Update issue
                 if action.get('close_ticket') is True:
-                    redmine.issue.update(issue.id, notes=notes, status_id=config['redmine']['issue_closed_id'])
+                    redmine.issue.update(issue.id, notes=notes, status_id=issue_closed_status_id)
                     logging.info(f"Ticket ID: {issue.id}, ticket closed")
                 elif action.get('change_status_to') is not None and isinstance(action.get('change_status_to'), int):
                     redmine.issue.update(issue.id, notes=notes, status_id=action['change_status_to'])
