@@ -7,7 +7,7 @@ Hello {{ issue.author }},
 
 this ticket wasn't updated for at least {{ days_since_last_update }}. We therefore assume that the problem has been solved in the meantime. If the issue persists, please reopen the ticket and give us a brief update on the situation.
 {% endif %}
-Here is the ticket: {{ url }}
+Here is the ticket: {{ issue.url }}
 
 Yours sincerely
 Your IT Team
