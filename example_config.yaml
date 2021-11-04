@@ -4,7 +4,7 @@ redmine:
   url: ${REDMINE_URL}
   version: ${REDMINE_VERSION}
   api_key: ${REDMINE_API_KEY}
-  issue_closed_id: 5  # Id of the "closed" status
+  time_zone: "Europe/Berlin"
   no_bot_tag: "#nobot" # a tag that signals bot not to handle an issue
 
 actions:

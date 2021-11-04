@@ -8,3 +8,4 @@ python-redmine==2.3.0
 PyYAML==5.4.1
 requests==2.25.1
 urllib3==1.26.5
+pytz~=2021.3

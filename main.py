@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import sys
 import os
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
+import pytz
 import logging
 from redminelib import Redmine
 from envyaml import EnvYAML
@@ -24,6 +25,7 @@ def treat_issues():
         url = config['redmine']['url']
         version = config['redmine']['version']
         api_key = config['redmine']['api_key']
+        time_zone = pytz.timezone(config['redmine']['time_zone'])
         no_bot_tag = config['redmine']['no_bot_tag']
         actions = config['actions']
         logging.getLogger().setLevel(config['logging']['level'].upper())
@@ -62,7 +64,11 @@ def treat_issues():
                 with open(f"{dir_path}templates/{action['template']}", newline='\r\n') as f:
                     content = f.read()
                 template = Template(content)
-                notes = template.render(author=issue.author.name, time_range=action['time_range'], url=issue.url)
+                notes = template.render(
+                    issue=issue,
+                    time_range=action['time_range'],
+                    days_since_last_update=(datetime.now(time_zone) - issue.updated_on.replace(tzinfo=time_zone)).days
+                )
 
                 # Update issue
                 if action.get('close_ticket') is True:

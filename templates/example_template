@@ -1,6 +1,12 @@
-Hello {{ author }},
+{% if issue.assigned_to is defined %}
+Hello {{ issue.assigned_to }},
 
-this ticket wasn't updated for at least {{ time_range }}. We therefore assume that the problem has been solved in the meantime. If the issue persists, please reopen the ticket and give us a brief update on the situation.
+this ticket is assigned to you but wasn't updated for at least {{ days_since_last_update }}. We therefore assume that the problem has been solved in the meantime. If the issue persists, please reopen the ticket and give us a brief update on the situation.
+{% else %}
+Hello {{ issue.author }},
+
+this ticket wasn't updated for at least {{ days_since_last_update }}. We therefore assume that the problem has been solved in the meantime. If the issue persists, please reopen the ticket and give us a brief update on the situation.
+{% endif %}
 Here is the ticket: {{ url }}
 
 Yours sincerely
