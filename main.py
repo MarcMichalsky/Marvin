@@ -98,13 +98,15 @@ def treat_issues():
                 if no_bot_tag in issue.description or find_no_bot_tag_in_journals(issue.journals):
                     continue
 
+                # Render message template
                 with open(f"{dir_path}templates/{action['template']}", newline='\r\n') as f:
                     content = f.read()
                 template = Template(content)
+                days_since_last_update = (datetime.now(time_zone) - issue.updated_on.replace(tzinfo=time_zone)).days + 1
                 notes = template.render(
                     issue=issue,
                     time_range=action['time_range'],
-                    days_since_last_update=(datetime.now(time_zone) - issue.updated_on.replace(tzinfo=time_zone)).days
+                    days_since_last_update=days_since_last_update
                 )
 
                 # Update issue
