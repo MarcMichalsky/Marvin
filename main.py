@@ -10,6 +10,17 @@ from jinja2 import Template
 from exceptions import IssueStatusNotFoundException
 
 
+def get_issue_status_id(status_name: str, redmine: Redmine):
+    all_status = redmine.issue_status.all()
+    statuses = all_status.filter(name=status_name)
+    if len(statuses) < 1:
+        raise IssueStatusNotFoundException(status_name)
+    elif len(statuses) > 1:
+        logging.warning(f'Expected one issue status with the name {status_name} but found '
+                        f'{len(statuses)}')
+    return statuses[0].id
+
+
 def treat_issues():
     dir_path = os.path.dirname(os.path.realpath(__file__)) + '/'
 
@@ -43,24 +54,26 @@ def treat_issues():
         sys.exit(1)
 
     # Get status id for closed issues
+    issue_closed_status_id = None
     try:
-        all_status = redmine.issue_status.all()
-        issue_closed_statuses = all_status.filter(name=issue_closed_status)
-        if len(issue_closed_statuses) < 1:
-            raise IssueStatusNotFoundException(issue_closed_status)
-        elif len(issue_closed_statuses) > 1:
-            logging.warning(f'Expected one issue status with the name {issue_closed_status} but found '
-                            f'{len(issue_closed_statuses)}')
-        issue_closed_status_id = issue_closed_statuses[0].id
+        issue_closed_status_id = get_issue_status_id(issue_closed_status, redmine)
     except IssueStatusNotFoundException as e:
         logging.error(e, exc_info=True)
-        sys.exit(1)
 
     # Loop through all actions defined in config.yaml
     for action in actions.values():
 
         # Calculate end_date
         end_date = date.today() - timedelta(days=+int(action['time_range']))
+
+        # Get change_status_id
+        change_status_id = None
+        if action.get('change_status_to'):
+            try:
+                change_status_id = get_issue_status_id(action['change_status_to'], redmine)
+            except IssueStatusNotFoundException as e:
+                logging.error(e, exc_info=True)
+                continue
 
         # Loop through affected issues
         try:
@@ -95,11 +108,11 @@ def treat_issues():
                 )
 
                 # Update issue
-                if action.get('close_ticket') is True:
+                if action.get('close_ticket') is True and issue_closed_status_id is not None:
                     redmine.issue.update(issue.id, notes=notes, status_id=issue_closed_status_id)
                     logging.info(f"Ticket ID: {issue.id}, ticket closed")
-                elif action.get('change_status_to') is not None and isinstance(action.get('change_status_to'), int):
-                    redmine.issue.update(issue.id, notes=notes, status_id=action['change_status_to'])
+                elif change_status_id is not None:
+                    redmine.issue.update(issue.id, notes=notes, status_id=change_status_id)
                     logging.info(f"Ticket ID: {issue.id}, changed ticket status")
                 else:
                     redmine.issue.update(issue.id, notes=notes)
