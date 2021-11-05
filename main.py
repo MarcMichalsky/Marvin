@@ -68,6 +68,14 @@ def treat_issues():
                     .filter(updated_on=f"><{action['start_date']}|{end_date.isoformat()}") \
                     .filter(project__name__in=action['projects'], status__name__in=action['status'], closed_on=None):
 
+                # Skip issue if start date is not yet reached
+                if hasattr(issue, 'start_date') and datetime.now() < issue.start_date:
+                    continue
+
+                # Skip issue if due date is not yet reached
+                if hasattr(issue, 'due_date') and datetime.now() < issue.due_date:
+                    continue
+
                 # Skip issue if a no_bot_tag is found in the issue description or any of its journals
                 def find_no_bot_tag_in_journals(journals):
                     for journal in journals:
