@@ -92,7 +92,7 @@ def treat_issues():
                 # Skip issue if a no_bot_tag is found in the issue description or any of its journals
                 def find_no_bot_tag_in_journals(journals):
                     for journal in journals:
-                        if no_bot_tag in journal.notes:
+                        if hasattr(journal, 'notes') and no_bot_tag in journal.notes:
                             return True
                     return False
                 if no_bot_tag in issue.description or find_no_bot_tag_in_journals(issue.journals):
