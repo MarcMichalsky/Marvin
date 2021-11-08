@@ -4,8 +4,9 @@ redmine:
   url: ${REDMINE_URL}
   version: ${REDMINE_VERSION}
   api_key: ${REDMINE_API_KEY}
-  issue_closed_id: 5  # Id of the "closed" status
-
+  time_zone: "Europe/Berlin"
+  issue_closed_status: "Done"  # Name of the "closed" status
+  no_bot_tag: "#nobot" # a tag that signals bot not to handle an issue
 
 actions:
 
@@ -26,7 +27,7 @@ actions:
       - "IT Tickets"
     status:
       - "In revision"
-    change_status_to: 4
+    change_status_to: "Waiting for feedback"
     template: "nudge_ticket"
 
 
