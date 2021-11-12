@@ -83,10 +83,12 @@ def treat_issues():
 
                 # Skip issue if start date is not yet reached
                 if hasattr(issue, 'start_date') and date.today() < issue.start_date:
+                    logging.info(f'Ticket ID: {issue.id}, skipped because start date not yet reached')
                     continue
 
                 # Skip issue if due date is not yet reached
                 if hasattr(issue, 'due_date') and date.today() < issue.due_date:
+                    logging.info(f'Ticket ID: {issue.id}, skipped because due date not yet reached')
                     continue
 
                 # Skip issue if a no_bot_tag is found in the issue description or any of its journals
@@ -96,6 +98,7 @@ def treat_issues():
                             return True
                     return False
                 if no_bot_tag in issue.description or find_no_bot_tag_in_journals(issue.journals):
+                    logging.info(f'Ticket ID: {issue.id}, skipped because no_bot_tag "{no_bot_tag}" was found')
                     continue
 
                 # Render message template
