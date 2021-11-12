@@ -43,7 +43,7 @@ actions:
     status:
       - "In revision"
     template: "nudge_ticket"
-    change_status_to: 4  # optional: change the ticket status to 4 (e.g. "waiting for feedback") 
+    change_status_to: "Waiting for feedback"  # optional: change the ticket status to "waiting for feedback"
 ```
 
 ## Usage
