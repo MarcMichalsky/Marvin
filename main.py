@@ -81,9 +81,10 @@ def treat_issues():
                     .filter(updated_on=f"><{action['start_date']}|{end_date.isoformat()}") \
                     .filter(project__name__in=action['projects'], status__name__in=action['status'], closed_on=None):
 
-                # Skip issue if start date is not yet reached
-                if hasattr(issue, 'start_date') and date.today() < issue.start_date:
-                    logging.info(f'Ticket ID: {issue.id}, skipped because start date not yet reached')
+                # Skip issue if start date + time_range is not yet reached
+                if hasattr(issue, 'start_date') \
+                        and date.today() < (issue.start_date + timedelta(days=+int(action['time_range']))):
+                    logging.info(f'Ticket ID: {issue.id}, skipped because start date + time_range not yet reached')
                     continue
 
                 # Skip issue if due date is not yet reached
