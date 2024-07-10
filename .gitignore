@@ -6,6 +6,7 @@ config.yaml
 
 # Environment
 .env
+.venv/
 venv/
 
 # Templates
