@@ -109,7 +109,12 @@ def treat_issues():
                 with open(f"{dir_path}templates/{action['template']}", newline='\r\n') as f:
                     content = f.read()
                 template = Template(content)
-                days_since_last_update = (datetime.now(time_zone) - issue.updated_on.replace(tzinfo=time_zone)).days + 1
+                # Make sure updated_on is a datetime object
+                if type(issue.updated_on) == str:
+                    issue_updated_on = datetime.strptime(issue.updated_on, '%Y-%m-%dT%H:%M:%S%z')
+                else:
+                    issue_updated_on = issue.updated_on
+                days_since_last_update = (datetime.now(time_zone) - issue_updated_on.replace(tzinfo=time_zone)).days + 1
                 notes = template.render(
                     issue=issue,
                     time_range=action['time_range'],
