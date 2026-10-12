@@ -12,6 +12,16 @@ from jinja2 import Template
 from exceptions import IssueStatusNotFoundException
 
 
+def find_no_bot_tag_in_journals(journals, no_bot_tag: str):
+    if not journals:
+        return False
+    return any(hasattr(journal, 'notes')
+               and journal.notes is not None
+               and isinstance(journal.notes, Iterable)
+               and no_bot_tag in journal.notes for journal in
+               journals)
+
+
 def get_issue_status_id(status_name: str, redmine: Redmine):
     all_status = redmine.issue_status.all()
     statuses = all_status.filter(name=status_name)
@@ -96,16 +106,8 @@ def treat_issues():
                     continue
 
                 # Skip issue if a no_bot_tag is found in the issue description or any of its journals
-                def find_no_bot_tag_in_journals(journals):
-                    if not journals:
-                        return False
-                    return any(hasattr(journal, 'notes')
-                               and journal.notes is not None
-                               and isinstance(journal.notes, Iterable)
-                               and no_bot_tag in journal.notes for journal in
-                               journals)
                 if (getattr(issue, 'description', None) is not None and no_bot_tag in issue.description) \
-                        or find_no_bot_tag_in_journals(getattr(issue, 'journals', None)):
+                        or find_no_bot_tag_in_journals(getattr(issue, 'journals', None), no_bot_tag):
                     logging.info(f'Ticket ID: {issue.id}, skipped because no_bot_tag "{no_bot_tag}" was found')
                     continue
 
