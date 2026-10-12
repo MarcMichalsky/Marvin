@@ -97,11 +97,15 @@ def treat_issues():
 
                 # Skip issue if a no_bot_tag is found in the issue description or any of its journals
                 def find_no_bot_tag_in_journals(journals):
+                    if not journals:
+                        return False
                     return any(hasattr(journal, 'notes')
+                               and journal.notes is not None
                                and isinstance(journal.notes, Iterable)
                                and no_bot_tag in journal.notes for journal in
                                journals)
-                if no_bot_tag in issue.description or find_no_bot_tag_in_journals(issue.journals):
+                if (getattr(issue, 'description', None) is not None and no_bot_tag in issue.description) \
+                        or find_no_bot_tag_in_journals(getattr(issue, 'journals', None)):
                     logging.info(f'Ticket ID: {issue.id}, skipped because no_bot_tag "{no_bot_tag}" was found')
                     continue
 
